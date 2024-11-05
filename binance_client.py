@@ -4,7 +4,7 @@ from typing import Tuple
 import pandas_ta as ta
 import pandas as pd
 from binance.enums import *
-test_net = True
+test_net = False
 def load_config(file_path: str) -> Tuple[str, str]:
     try:
         config = configparser.ConfigParser()
@@ -208,9 +208,6 @@ def create_order(symbol, price, quantity, side, order_type):
         if order_type in {FUTURE_ORDER_TYPE_STOP_MARKET, FUTURE_ORDER_TYPE_TAKE_PROFIT_MARKET,
                         FUTURE_ORDER_TYPE_STOP, FUTURE_ORDER_TYPE_TAKE_PROFIT}:
             parameters["stopPrice"] = format(price, ".2f")
-      
-
-
         # Gọi client.create_order với các tham số đúng cách
         return get_binance_client().futures_create_order(
             symbol=symbol,

@@ -1,3 +1,5 @@
-requests==2.26.0          # Thư viện cho HTTP requests
-python-binance==0.7.0     # Thư viện để tương tác với API Binance
-numpy>=1.21.0             # Thư viện cho tính toán số liệu
+pandas==2.2.3
+pandas_ta==0.3.14b0
+python-telegram-bot==21.7
+python_binance==1.0.22
+Requests==2.32.3
