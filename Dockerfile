@@ -4,6 +4,9 @@ FROM python:3.12.7-slim
 # Đặt thư mục làm việc trong container
 WORKDIR /app
 
+# Cài đặt setuptools trước
+RUN pip install --no-cache-dir setuptools
+
 # Sao chép file yêu cầu (requirements.txt) và cài đặt các thư viện
 COPY requirements.txt .
 
