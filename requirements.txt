@@ -6,4 +6,6 @@ python-telegram-bot==21.9
 python_binance==1.0.22
 Requests==2.32.3
 pytz==2023.3
+flask-cors==3.1.1
+
 # pipreqs E:\gitlab\python --force
