@@ -1,5 +1,5 @@
-# Sử dụng image Python mới nhất
-FROM python:3.9-slim
+# Sử dụng image Python 3.12.7 mới nhất
+FROM python:3.12.7-slim
 
 # Đặt thư mục làm việc trong container
 WORKDIR /app
