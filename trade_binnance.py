@@ -1,78 +1,72 @@
-import logging
-from binance.client import Client
-from binance.enums import *
-from binance_client import analyze_signals, get_historical_data , create_order , get_binance_client
 import time
-
-# Cấu hình logger
+from binance_client import analyze_signals, get_historical_data, get_current_future_price , create_order , get_binance_client , getAmtPosition
+from binance.client import Client
+import logging
+from binance.enums import *
+# Constants
+SYMBOL = "BTCUSDT"
+INTERVAL = Client.KLINE_INTERVAL_1MINUTE
+LIMIT = 200
+# Configure logger
 logging.basicConfig(
     filename='trade_log.txt',
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
-# Hàm ghi log
+
+# Log trade events
 def log_trade_event(event_type, message):
     logging.info(f"{event_type} - {message}")
     print(f"{event_type} - {message}")
 
-def has_open_position(symbol='BTCUSDT'):
-    try:
-        positions = get_binance_client().futures_account()['positions']
-        for position in positions:
-            if position['symbol'] == symbol and float(position['positionAmt']) != 0:
-                log_trade_event("INFO", f"Lệnh đang mở cho {symbol}. Không đặt lệnh mới.")
-                return True
-        return False
-    except Exception as e:
-        log_trade_event("ERROR", f"Lỗi khi kiểm tra lệnh mở: {e}")
-        return True  # Trả về True để không vào lệnh nếu lỗi xảy ra
-
-
-def trade_based_on_signal(analysis, symbol='BTCUSDT', quantity=0.1, stop_loss_percent=2.0, take_profit_percent=5.0):
-    if has_open_position(symbol):
-        return
-    
-    decision = analysis['decision']
-    strength = analysis['strength']
-    
-    if decision == "BUY" and strength >= 75:
-        try:
-            order = get_binance_client().futures_create_order(
+def trace(symbol , side , handlePrice , quantity):
+    order = create_order(
                 symbol=symbol,
-                side=SIDE_BUY,
-                type=ORDER_TYPE_MARKET,
-                quantity=quantity
+                price=0,
+                quantity=quantity,
+                side=side,
+                order_type=FUTURE_ORDER_TYPE_MARKET
             )
-            entry_price = float(order['fills'][0]['price'])
-            log_trade_event("OPEN", f"Mua (Long) {quantity} {symbol} Futures. Lệnh: {order}")
-            return order
-        except Exception as e:
-            log_trade_event("ERROR", f"Lỗi khi đặt lệnh BUY cho {symbol}: {e}")
-    elif decision == "SELL" and strength >= 75:
-        try:
-            order = get_binance_client().futures_create_order(
-                symbol=symbol,
-                side=SIDE_SELL,
-                type=ORDER_TYPE_MARKET,
-                quantity=quantity
-            )
-            entry_price = float(order['fills'][0]['price'])
-            log_trade_event("OPEN", f"Bán (Short) {quantity} {symbol} Futures. Lệnh: {order}")
-            return order
-        except Exception as e:
-            log_trade_event("ERROR", f"Lỗi khi đặt lệnh SELL cho {symbol}: {e}")
-    else:
-        log_trade_event("INFO", "Chưa có tín hiệu đủ mạnh để giao dịch.")
-        return None
-
-async  def  main():
-    symbol = 'BTCUSDT'
-    interval = Client.KLINE_INTERVAL_1MINUTE
-    limit = 200
+    getOrder = get_binance_client().futures_get_order(id =  order['orderId'])
+    avgPrice = float(getOrder['avgPrice'])
+    takeProfit = 0
+    stoploss   = 0
+    if side == SIDE_BUY:
+        takeProfit = avgPrice + handlePrice
+        stoploss   = avgPrice - handlePrice
+    elif side == SIDE_SELL:
+        takeProfit = avgPrice - handlePrice
+        stoploss   = avgPrice + handlePrice
+    order1  = create_order(
+                 symbol=symbol,
+                 price=takeProfit,
+                 quantity=0.01,
+                 side= SIDE_SELL if side == SIDE_BUY else SIDE_BUY,
+                 order_type=FUTURE_ORDER_TYPE_TAKE_PROFIT
+             )
+    order2  = create_order(
+                 symbol=symbol,
+                 price=stoploss,
+                 quantity=0.01,
+                 side= SIDE_SELL if side == SIDE_BUY else SIDE_BUY,
+                 order_type=FUTURE_ORDER_TYPE_STOP
+             )
+def main():
     while True:
-        df = get_historical_data(symbol, interval, limit)
-        analysis = analyze_signals(df)
-        trade_based_on_signal(analysis)
-        time.sleep(10)  # Kiểm tra mỗi phút, thay đổi theo nhu cầu của bạn.
+        data = get_historical_data(symbol=SYMBOL, interval=INTERVAL, limit=LIMIT)
+        analysis = analyze_signals(data, 14)
+        current_price = get_current_future_price(symbol=SYMBOL)
+        amtPosition = getAmtPosition(symbol=SYMBOL)
+        if amtPosition == 0:
+            side = analysis['decision']
+            strength = analysis['strength']
+            if side in ["BUY", "SELL"] and strength > 70:
+                get_binance_client().futures_cancel_all_open_orders(symbol = SYMBOL)
+                trace(symbol=SYMBOL , side= side  , handlePrice=1000 , quantity=0.1)
+                log_trade_event("INFO", f"{side} {SYMBOL} AT: {current_price}")
+            else:
+                print(f"Non-action at {SYMBOL}: {current_price}")
+        time.sleep(20)
 if __name__ == '__main__':
-    main()
+  main()
+

@@ -4,7 +4,7 @@ from typing import Tuple
 import pandas_ta as ta
 import pandas as pd
 from binance.enums import *
-test_net = False
+test_net = True
 def load_config(file_path: str) -> Tuple[str, str]:
     try:
         config = configparser.ConfigParser()
@@ -193,6 +193,20 @@ def analyze_signals(df, period=14):
     except Exception as e:
         raise Exception(f"Error analyzing signals: {str(e)}")
     
+def get_tick_size(symbol):
+    # Lấy thông tin về cặp giao dịch từ Binance
+    exchange_info = get_binance_client().futures_exchange_info()
+    for symbol_info in exchange_info['symbols']:
+        if symbol_info['symbol'] == symbol:
+            for filter in symbol_info['filters']:
+                if filter['filterType'] == 'PRICE_FILTER':
+                    return float(filter['tickSize'])  # Trả về tick size
+    return 0.01  # Nếu không tìm thấy, mặc định trả về tick size là 0.01
+
+def round_to_tick_size(price, tick_size):
+    # Làm tròn giá về bội số của tick size
+    return round(price / tick_size) * tick_size
+    
 def create_order(symbol, price, quantity, side, order_type):
     try:
         parameters = {
@@ -201,6 +215,8 @@ def create_order(symbol, price, quantity, side, order_type):
          "quantity": format(quantity, ".3f"),
          "type": order_type,
         }
+        tick_size = get_tick_size(symbol)
+        rounded_price = round_to_tick_size(price, tick_size)
 
         if order_type in {FUTURE_ORDER_TYPE_LIMIT, FUTURE_ORDER_TYPE_STOP, FUTURE_ORDER_TYPE_TAKE_PROFIT}:
             parameters["price"] = format(price, ".2f")
@@ -214,8 +230,8 @@ def create_order(symbol, price, quantity, side, order_type):
             side=side,
             quantity=format(quantity, ".3f"),
             type=order_type,
-            price=format(price, ".2f") if 'price' in parameters else None,
-            stopprice=format(price, ".2f") if 'stopPrice' in parameters else None
+            price=format(rounded_price, ".2f") if 'price' in parameters else None,
+            stopprice=format(rounded_price, ".2f") if 'stopPrice' in parameters else None
         )
     
     except Exception as e:
@@ -229,3 +245,12 @@ def get_current_future_price(symbol):
     except Exception as e:
         print(f"Error getting current price: {e}")
         return None
+    
+
+def getAmtPosition(symbol) -> float:
+    try:
+        position = get_binance_client().futures_position_information()
+        first_data = next((item for item in position if item['symbol'] == symbol), None)
+        return float(first_data['positionAmt'])
+    except Exception as e:
+        return 0

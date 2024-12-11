@@ -14,4 +14,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Chạy ứng dụng
-CMD ["python", "test_net.py"]
+CMD ["python", "api.py"]
