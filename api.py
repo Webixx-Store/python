@@ -47,7 +47,7 @@ def analyze():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/analyze1', methods=['GET'])
-def analyze():
+def analyze1():
     try:
         # Lấy các giá trị từ tham số query
         symbol = request.args.get('symbol', default='BTCUSDT')  # Mặc định là 'BTCUSDT' nếu không có tham số
