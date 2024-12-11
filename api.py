@@ -5,6 +5,12 @@ from binance_client import analyze_signals, get_historical_data
 from binance.client import Client
 from flask import Flask, jsonify , request
 from common import generate_content
+from flask_cors import CORS  # Import the CORS module
+
+from datetime import datetime
+import pytz
+
+
 
 
 # Constants
@@ -15,7 +21,9 @@ TAKE_PROFIT = 300
 STOP_LOSS = 300
 
 app = Flask(__name__)
-
+CORS(app, resources={
+    r"/analyze1": {"origins": ["https://dattot-vn.web.app", "http://localhost"]}
+})
 # Hàm gửi yêu cầu GET đến API của bạn
 def call_api():
     url = "https://python-fk3x.onrender.com"  # Thay đổi với URL thực tế của bạn
@@ -60,11 +68,24 @@ def analyze1():
         # Analyze signals
         analysis = analyze_signals(data, 14)
 
+        # Vietnam timezone
+        vietnam_timezone = pytz.timezone('Asia/Ho_Chi_Minh')
+
+        # Get the current time in Vietnam
+        current_vietnam_time = datetime.now(vietnam_timezone)
+
+        # Format the time to the desired format (e.g., YYYY-MM-DD HH:MM:SS)
+        formatted_vietnam_time = current_vietnam_time.strftime("%Y-%m-%d %H:%M:%S")
+
+        # Now you can include this in your message
+
+        
+
         message = (
-            f"\nTime: {analysis['timestamp']}\n"
+            f"\nTime: {formatted_vietnam_time}\n"
             f"Interval: {interval}\n"
             f"Decision: {analysis['decision']} (Strength: {analysis['strength']:.2f}%)\n"
-            f"Current Price: {analysis['current_price']}\n\n"
+            # f"Current Price: {analysis['current_price']}\n\n"
             "Signal Details:\n"
         )
         for signal in analysis['signals_detail']:

@@ -5,4 +5,5 @@ pandas_ta==0.3.14b
 python-telegram-bot==21.9
 python_binance==1.0.22
 Requests==2.32.3
+pytz==2023.3
 # pipreqs E:\gitlab\python --force
