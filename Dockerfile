@@ -21,6 +21,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Sao chép mã nguồn ứng dụng vào container
 COPY . .
-
+EXPOSE 5000
 # Chạy ứng dụng
 CMD ["python", "api.py"]
