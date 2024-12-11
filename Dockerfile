@@ -8,7 +8,7 @@ WORKDIR /app
 RUN pip install --upgrade pip
 
 # Cài đặt setuptools và pkg_resources để tránh lỗi
-RUN pip install --no-cache-dir --upgrade setuptools pkg_resources
+RUN pip install --no-cache-dir --upgrade setuptools
 
 # Cài đặt build-essential và python3-dev cho các thư viện cần biên dịch
 RUN apt-get update && apt-get install -y build-essential python3-dev
