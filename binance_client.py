@@ -4,7 +4,7 @@ from typing import Tuple
 import pandas_ta as ta
 import pandas as pd
 from binance.enums import *
-test_net = True
+test_net = False
 def load_config(file_path: str) -> Tuple[str, str]:
     try:
         config = configparser.ConfigParser()
