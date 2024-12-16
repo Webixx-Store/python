@@ -254,3 +254,4 @@ def getAmtPosition(symbol) -> float:
         return float(first_data['positionAmt'])
     except Exception as e:
         return 0
+

@@ -107,7 +107,7 @@ def analyze1():
 
         message = (
             f"\nSymbol: {symbol}\n"
-            f"\nCurrent Price: {currentPrice}\n"
+            f"\nCurrentPrice: {currentPrice}\n"
             f"\nTime: {formatted_vietnam_time}\n"
             f"Interval: {interval}\n"
             f"Decision: {analysis['decision']} (Strength: {analysis['strength']:.2f}%)\n"
