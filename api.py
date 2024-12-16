@@ -24,6 +24,19 @@ app = Flask(__name__)
 CORS(app, resources={
     r"/analyze1": {"origins": ["https://dattot-vn.web.app", "http://localhost:4300" , "https://cryptovuive.web.app" ]}
 })
+
+def get_public_ip():
+    """Lấy địa chỉ IP public của server."""
+    try:
+        ip_response = requests.get("https://api64.ipify.org?format=json")
+        if ip_response.status_code == 200:
+            ip_data = ip_response.json()
+            return ip_data.get("ip", "Không lấy được IP")
+        else:
+            return f"Không thể lấy IP. Mã trạng thái: {ip_response.status_code}"
+    except requests.exceptions.RequestException as e:
+        return f"Lỗi khi lấy IP: {e}"
+    
 # Hàm gửi yêu cầu GET đến API của bạn
 def call_api():
     url = "https://python-fk3x.onrender.com"  # Thay đổi với URL thực tế của bạn
@@ -40,6 +53,15 @@ def call_api():
             print(f"Đã có lỗi xảy ra: {e}")
         
         time.sleep(30)  # Đợi 30 giây trước khi gọi lại
+
+@app.route('/ip', methods=['GET'])
+def get_data():
+    public_ip = get_public_ip()
+    response_data = {
+        "message": "Dữ liệu từ server",
+        "public_ip": public_ip
+    }
+    return jsonify(response_data)
 
 @app.route('/analyze', methods=['GET'])
 def analyze():
