@@ -22,7 +22,7 @@ STOP_LOSS = 300
 
 app = Flask(__name__)
 CORS(app, resources={
-    r"/analyze1": {"origins": ["https://dattot-vn.web.app", "http://localhost:43004300" , "https://cryptovuive.web.app" ]}
+    r"/analyze1": {"origins": ["https://dattot-vn.web.app", "http://localhost:4300" , "https://cryptovuive.web.app" ]}
 })
 # Hàm gửi yêu cầu GET đến API của bạn
 def call_api():
