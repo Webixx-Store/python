@@ -39,7 +39,7 @@ def get_public_ip():
     
 # Hàm gửi yêu cầu GET đến API của bạn
 def call_api():
-    url = "https://python-fk3x.onrender.com"  # Thay đổi với URL thực tế của bạn
+    url = "https://python-qnav.onrender.com"  # Thay đổi với URL thực tế của bạn
     while True:
         try:
             response = requests.get(url)
