@@ -120,7 +120,7 @@ def analyze1():
         message += "\nIndicator Values:\n"
         for indicator, value in analysis['indicators'].items():
             message += f"{indicator}: {value:.2f}\n"
-        return generate_content("làm ơn hãy phân tích chi tiết cụ thể  từng chỉ báo của dữ liệu này:" + message + " thành 1 bài báo html có font chữ to và phải rất rõ ràng và không chứa thẻ <html> để tôi inner nó trong thẻ div và trên bài báo phải nêu rõ được xu thế thị trường phân tích giá và xu hướng thị trường 1 cách chi tiết  phần kết luận bạn nên làm to và rõ ràng nổi bật hơn các phần khác. (Chú ý đây là dữ liệu được lấy từ 200 giá gần nhất của khung thời gian + " +interval+ " )" + "Hãy đưa ra một mức giá giá chốt lời và chốt lỗ cụ thể dựa theo các chĩ số phân tích ở trên" )
+        return generate_content("làm ơn hãy phân tích chi tiết cụ thể  từng chỉ báo của dữ liệu này:" + message + " thành 1 bài báo html có font chữ to và phải rất rõ ràng và không chứa thẻ <html> để tôi inner nó trong thẻ div và trên bài báo phải nêu rõ được xu thế thị trường phân tích giá và xu hướng thị trường 1 cách chi tiết  phần kết luận bạn nên làm to và rõ ràng nổi bật hơn các phần khác. (Chú ý đây là dữ liệu được lấy từ 200 giá gần nhất của khung thời gian + " +interval+ " )" + "Hãy đưa ra một mức giá giá chốt lời và chốt lỗ cụ thể dựa theo các chĩ số phân tích ở trên và giá hiện tại là " + currentPrice )
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
